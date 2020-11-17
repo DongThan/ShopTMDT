@@ -443,3 +443,36 @@ opacity: 0.8;
     float: right;
     margin-left: 0%;
 }
+
+.tablePagination {
+    margin-top: 1em;
+    right:5%;
+    font-family: Showcard Gothic;
+    font-size: 20px;
+    width: 100%;
+    background-color: var(--secondary-color);
+    text-align: center;
+    padding-left: 20px;
+    display: inline;
+    
+}
+
+.tablePagination:before {
+    content:"Pages: ";
+}
+
+.tablePagination li {
+    cursor: pointer;
+    display: inline-block;
+    list-style: none;
+    padding: 2px 9px;
+}
+
+.tablePagination li:hover {
+    background: #eee;
+}
+
+.tablePagination .current {
+    background: #26b;
+    color: #fff;
+}

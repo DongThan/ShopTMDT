@@ -1,3 +1,4 @@
+<%@page import="DAO.EmployeeDAO"%>
 <%
    String a="home";
 %>
@@ -18,15 +19,75 @@
         <script src="adminpage.js" type="text/javascript"></script>
         <script src="https://canvasjs.com/assets/script/canvasjs.min.js" type="text/javascript"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="jquery.tablePagination.js" type="text/javascript"></script>
         <script>
             $(document).ready(function(){   
                 $("#employeerefresh").click(function(){
-                    $("#employeetable").load("updatetable.jsp #table1");
+//                    $("#employeetable").load("updatetable.jsp #table1");                   
+                    $("#employeetable").load( "ajax-updatetable-emp.jsp #table1", function() {
+                        $('#table1').tablePagination({
+                            perPage: 7,
+                            showAllButton:false
+                        });
+                        $("button[id|='del']").click(function() {
+                            if (confirm('Xóa nhân viên khỏi database database?')) {
+                                $(this).closest('tr').find('td').eq(0).each(function() {
+                                    var textval = $(this).text(); // this will be the text of each <td>
+                                    console.log(textval);
+                                    $.ajax({
+                                        type: "post",
+                                        url: "ajax-delete-emp.jsp", //this is my servlet
+                                        data: {
+                                            EID:textval               
+                                        },
+                                        success: function ( response ){   
+                                            //handleData(response);
+                                            var success =  $($.parseHTML(response)).filter("#sqlmsg").html(); 
+                                            console.log(success); // div#success
+                                            alert(success);
+                                            clickme("employeerefresh");
+                                        },
+                                        error: function(xhr, textStatus, error){
+                                            console.log(xhr.statusText);
+                                            console.log(textStatus);
+                                            console.log(error);
+                                            console.log("Fail");
+                                        }
+                                    });
+                                }); 
+                            } else {
+
+                            }
+
+                        });
+                        $("button[id|='edit']").click(function() {
+                            openForm("form2");
+//                    console.log(emp_edit_eid);           
+//                    console.log(emp_edit_name);
+//                    console.log(emp_edit_sex);
+//                    console.log(emp_edit_email);
+//                    console.log(emp_edit_phone);
+//                    console.log(emp_edit_add);
+//                    console.log(emp_edit_pay);
+//                    console.log(emp_edit_sal);
+                            var emp_edit_eid=$(this).closest('tr').find('td').eq(0).text();
+                            var emp_edit_name=$(this).closest('tr').find('td').eq(1).text();
+                            var emp_edit_sex=$(this).closest('tr').find('td').eq(2).text();
+                            var emp_edit_email=$(this).closest('tr').find('td').eq(3).text();
+                            var emp_edit_phone=$(this).closest('tr').find('td').eq(4).text();
+                            var emp_edit_add=$(this).closest('tr').find('td').eq(5).text();
+                            var emp_edit_pay=$(this).closest('tr').find('td').eq(6).text();
+                            var emp_edit_sal=$(this).closest('tr').find('td').eq(7).text();
+                            FillForm2(emp_edit_name,emp_edit_sex,emp_edit_email,emp_edit_phone,emp_edit_add,
+                                    emp_edit_pay,emp_edit_sal,emp_edit_eid);
+                        });
+                    });
+                    
                 });
                 $('#save-emp').click(function (){
                     $.ajax({
                         type: "post",
-                        url: "insertemp.jsp", //this is my servlet
+                        url: "ajax-insertemp.jsp", //this is my servlet
                         data: {
                             name: $('#name-emp').val(), 
                             mail: $('#mail-emp').val(),
@@ -49,11 +110,95 @@
                         }
                     });
                 });
+                $('#edit-emp').click(function (){
+                    $.ajax({
+                        type: "post",
+                        url: "ajax-edit-emp.jsp", //this is my servlet
+                        data: {
+                            eid: $('#eid-emp-edit').val(),
+                            name: $('#name-emp-edit').val(), 
+                            mail: $('#mail-emp-edit').val(),
+                            phone: $('#phone-emp-edit').val(), 
+                            address: $('#add-emp-edit').val(), 
+                            sex: $('#sex-emp-edit').val(), 
+                            salary: $('#salary-emp-edit').val(),
+                            paycheck: $('#paycheck-emp-edit').val()
+                        },
+                        success: function ( response ){   
+                            //handleData(response);
+                            var success = $($.parseHTML(response)).filter("#sqlmsg").html();
+                            console.log(success); // div#success
+                            alert(success);
+                            clickme("employeerefresh");
+                        },
+                        error: function(xhr, textStatus, error){
+                            console.log(xhr.statusText);
+                            console.log(textStatus);
+                            console.log(error);
+                        }
+                    });
+                });
                 $("#empsort-id").click(function(){
                     sortTableID('table1');
                 });
                 $("#empsort-name").click(function(){
                     sortTable('table1','1');
+                });
+                $('#table1').tablePagination({
+                    perPage: 7,
+                    showAllButton:false
+                });
+                $("button[id|='del']").click(function() {
+                    if (confirm('Xóa nhân viên khỏi database database?')) {
+                        $(this).closest('tr').find('td').eq(0).each(function() {
+                            var textval = $(this).text(); // this will be the text of each <td>
+                            console.log(textval);
+                            $.ajax({
+                                type: "post",
+                                url: "ajax-delete-emp.jsp", //this is my servlet
+                                data: {
+                                    EID:textval               
+                                },
+                                success: function ( response ){   
+                                    //handleData(response);
+                                    var success =  $($.parseHTML(response)).filter("#sqlmsg").html(); 
+                                    console.log(success); // div#success
+                                    alert(success);
+                                    clickme("employeerefresh");
+                                },
+                                error: function(xhr, textStatus, error){
+                                    console.log(xhr.statusText);
+                                    console.log(textStatus);
+                                    console.log(error);
+                                    console.log("Fail");
+                                }
+                            });
+                        }); 
+                    } else {
+
+                    }
+                    
+                });
+                $("button[id|='edit']").click(function() {
+                    openForm("form2");
+//                    console.log(emp_edit_eid);           
+//                    console.log(emp_edit_name);
+//                    console.log(emp_edit_sex);
+//                    console.log(emp_edit_email);
+//                    console.log(emp_edit_phone);
+//                    console.log(emp_edit_add);
+//                    console.log(emp_edit_pay);
+//                    console.log(emp_edit_sal);
+                    var emp_edit_eid=$(this).closest('tr').find('td').eq(0).text();
+                    var emp_edit_name=$(this).closest('tr').find('td').eq(1).text();
+                    var emp_edit_sex=$(this).closest('tr').find('td').eq(2).text();
+                    var emp_edit_email=$(this).closest('tr').find('td').eq(3).text();
+                    var emp_edit_phone=$(this).closest('tr').find('td').eq(4).text();
+                    var emp_edit_add=$(this).closest('tr').find('td').eq(5).text();
+                    var emp_edit_pay=$(this).closest('tr').find('td').eq(6).text();
+                    var emp_edit_sal=$(this).closest('tr').find('td').eq(7).text();
+                    FillForm2(emp_edit_name,emp_edit_sex,emp_edit_email,emp_edit_phone,emp_edit_add,
+                            emp_edit_pay,emp_edit_sal,emp_edit_eid);
                 });
             });
         </script>
@@ -67,12 +212,14 @@
         </div>
         <nav>
             <button onclick="openPage('home')" title="Visit Dashboard" id="default"><i class="fas fa-home"></i></button>
-            <button title="View Employee" onclick="openPage('emp')" id="emppage"><i class="fas fa-user-check"></i></button>
-            <button title="View Product" onclick="openPage('pro') " id = ''><i class="fas fa-money-check-alt"></i></button>
+            <button title="View Employee" onclick="openPage('emp')" id="emppage"><i class="fas fa-id-card"></i></button>
+            <button title="View Product" onclick="openPage('pro') " id = ''><i class="fas fa-shopping-bag"></i></button>
+            <button title="View Customer" onclick="openPage('cus') " id = ''><i class="fas fa-users"></i></button>
+            <button title="View Sales" onclick="openPage('sales') " id = ''><i class="fas fa-money-check-alt"></i></button>
             <button title="View Statistic" onclick="openPage('sta');miniChart('chartContainer1','btnchart1')" id="stapage"><i class="fas fa-chart-line"></i></button>
             <button title="Logout" ><i class="fas fa-sign-out-alt"></i></button>
         </nav>
-        <!--        Dashboard-->
+        <!--        Dashboard code ở đây-->
         <div class="divcontent" id="home">            
             <div class="divchua">
                 <div class="dashbo" id="d1">
@@ -132,7 +279,7 @@
 
             </div>
         </div>
-        <!--        Employee-->
+        <!--        Employee code ở đây-->
         <div class="divcontent" id="emp" >     
             <div class="divchua">
                 <div class="dashbo" id="d1">
@@ -165,24 +312,16 @@
                             <th>Sex</th>
                             <th>E-mail</th>
                             <th>Phone</th>
-                            <th>Address</th>
+                            <th>Address</th>                           
+                            <th>Paycheck</th>
+                            <th>Salary</th>
                             <th colspan="2">Option</th>
                         </tr>
                         <%
-                        String url = "jdbc:mysql://localhost:3306/webdb";
-                        String user = "root";
-                        String password = "QM1234";
-                        Connection connection = null;
-                        PreparedStatement prestatement = null;
                         ResultSet resultSet = null;
-                        url = "jdbc:mysql://localhost:3306/dbthuongmaidientu";
-                        user = "root"; 
-                        password = "QM1234"; 
                         try {
-                                Class.forName("com.mysql.jdbc.Driver").newInstance();
-                                connection = DriverManager.getConnection(url, user , password);
-                                prestatement = connection.prepareStatement("SELECT * FROM employee");
-                                resultSet = prestatement.executeQuery();
+                                EmployeeDAO EmpDao=new EmployeeDAO();
+                                resultSet = EmpDao.AllEmp();
                                 while (resultSet.next()) {%>
                                 <tr>
                                     <td><%=resultSet.getString("EmployeeID")%></td>
@@ -191,16 +330,18 @@
                                     <td><%=resultSet.getString("Email")%></td>
                                     <td><%=resultSet.getString("Phone")%></td>
                                     <td><%=resultSet.getString("Address")%></td>   
-                                    <td><button class="btn"><i class="fas fa-edit"></i></button></td>
-                                    <td><button class="btn"><i class="fa fa-trash"></i></button></td>
+                                    <td><%=resultSet.getString("Paycheck")%></td> 
+                                    <td><%=resultSet.getString("Salary")%></td>
+                                    <td><button class="btn" id="edit"><i class="fas fa-edit"></i></button></td>
+                                    <td><button class="btn" id="del"><i class="fa fa-trash"></i></button></td>
                                 </tr>                   
                                 <%}
                             }        
-                        catch (ClassNotFoundException | IllegalAccessException | InstantiationException | SQLException e) 
+                            catch (Exception e)
                             {
                                 e.printStackTrace();
                             }
-                         %>
+                        %>
                     </table>
                 </div>
                 <div class="dashbosl" >
@@ -216,14 +357,9 @@
                             <th colspan="2">Option</th>
                         </tr>
                         <%
-                        url = "jdbc:mysql://localhost:3306/dbthuongmaidientu";
-                        user = "root"; 
-                        password = "QM1234"; 
                         try {
-                                Class.forName("com.mysql.jdbc.Driver").newInstance();
-                                connection = DriverManager.getConnection(url, user , password);
-                                prestatement = connection.prepareStatement("SELECT * FROM employee");
-                                resultSet = prestatement.executeQuery();
+                                EmployeeDAO EmpDao=new EmployeeDAO();
+                                resultSet = EmpDao.AllEmp();
                                 while (resultSet.next()) {%>
                                 <tr>
                                     <td><%=resultSet.getString("EmployeeID")%></td>
@@ -235,19 +371,69 @@
                                 </tr>                   
                                 <%}
                             }        
-                        catch (ClassNotFoundException | IllegalAccessException | InstantiationException | SQLException e) 
+                        catch (Exception e) 
                             {
                                 e.printStackTrace();
                             }
-                         %>
+                        %>
                     </table>
                 </div>
             </div>
         </div>
+                    <!--Product code ở đây-->
         <div class="divcontent" id="pro" >     
             <div class="divchua">
-                <div class="dashbo" id="d3">
-                    <p>Product</p>
+                <div class="dashbo" id="d1">
+                    <p>Employee</p>
+                </div>
+                <div class="dashbosr" >
+                    <p id="time">???</p>
+                </div>
+                <div class="divcon" id="d3">
+
+                </div>
+                <div class="divcon" id="d3">
+
+                </div>
+                <div class="divcon" id="d3">
+
+                </div>
+                <div class="divcon" id="d3">
+
+                </div>
+            </div>
+        </div>
+                    <!--Customer code ở đây-->
+        <div class="divcontent" id="cus" >     
+            <div class="divchua">
+                <div class="dashbo" id="d1">
+                    <p>Employee</p>
+                </div>
+                <div class="dashbosr" >
+                    <p id="time">???</p>
+                </div>
+                <div class="divcon" id="d3">
+
+                </div>
+                <div class="divcon" id="d3">
+
+                </div>
+                <div class="divcon" id="d3">
+
+                </div>
+                <div class="divcon" id="d3">
+
+                </div>
+            </div>
+        </div>
+                    <!--Khuyến mãi code ở đây-->
+        <div class="divcontent" id="sales" >     
+            <div class="divchua">
+                <div class="dashbo" id="d1">
+                    <p>Employee</p>
+                </div>
+                <div class="dashbosr" >
+                    <p id="time">???</p>
                 </div>
                 <div class="divcon" id="d3">
 
@@ -265,8 +451,11 @@
         </div>
         <div class="divcontent" id="sta" >     
             <div class="divchua">
-                <div class="dashbo" id="d4">
-                    <p>Statistic</p>
+                <div class="dashbo" id="d1">
+                    <p>Employee</p>
+                </div>
+                <div class="dashbosr" >
+                    <p id="time">???</p>
                 </div>
                 <div class="dashbosl" >
                     <p >Paycheck<button class="minibtn" id="btnchart1" onclick="miniChart('chartContainer1','btnchart1')">-</button></p>
@@ -298,7 +487,32 @@
             <button type="button" style="background-color: red;" onclick="closeForm('form1')" ><strong>Close</strong></button>        
         </form>  
 
-    </div> 
+        </div> 
+        <div class="divform" id="form2" >
+            <form >
+                <h1>Edit Employee</h1>
+                <label ><strong>Name</strong></label>
+                <input type="text" placeholder="Enter Name" name="name" id="name-emp-edit">
+                <label ><strong>E-mail</strong></label>
+                <input type="text" placeholder="Enter E-mail" name="mail" id="mail-emp-edit">
+                <label ><strong>Phone</strong></label>
+                <input type="text" placeholder="Enter Phone" name="phone" id="phone-emp-edit">
+                <label ><strong>Address</strong></label>
+                <input type="text" placeholder="Enter Address" name="address" id="add-emp-edit">
+                <label ><strong>Salary</strong></label>
+                <input type="text" placeholder="Enter Salary" name="salary" id="salary-emp-edit">
+                <label ><strong>Sex</strong></label>
+                <select name="sex" id="sex-emp-edit">
+                    <option selected>M</option>
+                    <option>F</option>
+                </select><br>
+                <label ><strong>Paycheck</strong></label>
+                <input type="date" id="paycheck-emp-edit" name="paycheck"><br>
+                <input type="hidden" id="eid-emp-edit">
+                <button type="button" id="edit-emp"><strong>Edit</strong></button>   
+                <button type="button" style="background-color: red;" onclick="closeForm('form2')" ><strong>Close</strong></button>        
+            </form>  
+            </div>
         <script>  
             startTime();
             creatchart1();

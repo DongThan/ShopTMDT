@@ -15,7 +15,7 @@ function SetRedirect(pagename,id){
     document.getElementById("re").submit();
 }
 function openPage(pageName) {
-// Hide all elements with class="tabcontent" by default */
+
 var i, tabcontent;
 tabcontent = document.getElementsByClassName("divcontent");
 for (i = 0; i < tabcontent.length; i++) {
@@ -87,23 +87,43 @@ function FilterTable(name,inputid) {
     var input, filter, table, tr, td, i, txtValue,value;
     input = document.getElementById(inputid);
     filter = input.value.toUpperCase();
-    table = document.getElementById(name);
-    tr = table.getElementsByTagName("tr");
-    value = parseInt(document.getElementById("empselect").value);
-    for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[value];
-        if (td) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-            } 
-            else {
-              tr[i].style.display = "none";
-            }
-        }       
+    if(filter===""){
+        clickme("employeerefresh");
     }
+    else
+    {
+        table = document.getElementById(name);
+        tr = table.getElementsByTagName("tr");
+        value = parseInt(document.getElementById("empselect").value);
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[value];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } 
+                else {
+                     tr[i].style.display = "none";
+                }
+            }       
+        }
+    }    
 }
-
+function FillForm2(name,sex,email,phone,add,pay,sal,eid)
+{
+    document.getElementById("name-emp-edit").value=name;
+    document.getElementById("mail-emp-edit").value=email;
+    document.getElementById("phone-emp-edit").value=phone;
+    document.getElementById("add-emp-edit").value=add;
+    document.getElementById("salary-emp-edit").value=sal;
+    document.getElementById("paycheck-emp-edit").value=pay;
+    document.getElementById("eid-emp-edit").value=eid;
+    if(sex==="F"){
+        document.getElementById("sex-emp-edit").options.selectedIndex =1;
+    }
+    
+    
+}
 function creatchart1() {    
     var chart = new CanvasJS.Chart("chartContainer1", {
 //        width:320,
